@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.get('/:id',(req,res) => {
     // let customerId = req.params.id;
+        // console.log("Customer route reached");
     const customerId = Number(req.params.id);
     const customer = customers.find(customer => customer.id === customerId)
     // console.log(customer);

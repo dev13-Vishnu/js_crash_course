@@ -2,12 +2,14 @@ class MyPromise {
     constructor(){
         this.state = "pending",
         this.values = undefined;
+        this.reason = undefined;
         this.callbacks = [];
     }
-    then(callback) {
+    then(onFullfilled, onRejected) {
         const nextPromise = new MyPromise();
         this.callbacks.push({
-            callback,
+            onFullfilled,
+            onRejected,
             nextPromise
         });
         return nextPromise;
@@ -17,15 +19,51 @@ class MyPromise {
         this.values = value;
 
         this.callbacks.forEach(item => {
-            const result =item.callback(value);
-            if(result instanceof MyPromise){
-                result.then(value=> {
+            try {
+                if(item.onFullfilled) {
+                    const result =item.onFullfilled(value);
+                    if(result instanceof MyPromise){
+                        result.then(value=> {
+                            item.nextPromise.resolve(value);
+                        })
+                    } else {
+                        item.nextPromise.resolve(result);
+                    }
+                } else {
                     item.nextPromise.resolve(value);
-                })
-            } else {
-                item.nextPromise.resolve(result);
+                }
+            } catch (error) {
+                item.nextPromise.reject(error);
             }
-            
+        })
+    }
+    reject (reason) {
+        this.state= "rejected";
+        this.reason = reason;
+        this.value = undefined;
+        
+        this.callbacks.forEach(item => {
+            try {
+                if(item.onRejected) {
+                    const result =item.onRejected(reason)
+                    if(result instanceof MyPromise){
+                        result.then(
+                            value => {
+                                item.nextPromise.resolve(value);
+                            },
+                            error => {
+                                item.nextPromise.reject(error);
+                            }
+                        );
+                    } else {
+                        item.nextPromise.resolve(result);
+                    }
+                } else {
+                    item.nextPromise.reject(reason);
+                }
+            } catch (error) {
+                item.nextPromise.reject(error);
+            }
         })
     }
 }
@@ -67,4 +105,4 @@ delayed.resolve(50)
 
 
 // console.log(p1 instanceof MyPromise)
-// console.log(42 instanceof MyPromise)
+// console.log(42 instanceof MyPromise) 

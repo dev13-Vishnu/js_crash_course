@@ -26,7 +26,6 @@ const userRecord = {
 
 // Extracts 'id' and 'email', collects all remaining keys into 'payload'
 const { id, email, ...payload } = userRecord;
-
 console.log(id); // 101
 console.log(email); // "alice@example.com"
 console.log(payload); // { username: "alice99", role: "admin", status: "active" }
@@ -100,6 +99,10 @@ const updatedUser = {
   active: true, // Overwrites user.active
   lastLogin: "2026-08-18", // Adds new property
 };
+
+const wrong = {active: true, ...user};
+console.log("Wrong,", wrong)
+
 
 console.log(updatedUser);
 // { id: 101, name: "Alice", role: "guest", active: true, lastLogin: "2026-08-18" }

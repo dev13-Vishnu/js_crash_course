@@ -106,3 +106,6 @@ delayed.resolve(50)
 
 // console.log(p1 instanceof MyPromise)
 // console.log(42 instanceof MyPromise) 
+
+
+
